@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Web3 from 'web3';
 import LoadingSpinner from '../components/icons/LoadingSpinner';
+import { SiweMessage } from 'siwe';
 
 const Home: NextPage = () => {
   const walletConnectionAttempted = useStore(
@@ -29,7 +30,7 @@ const Home: NextPage = () => {
         const [account] = accounts;
         if (account) {
           setIsLoading(true);
-          authenticate();
+          signInWithEthereum();
         } else {
           window.location.reload();
         }
@@ -38,12 +39,47 @@ const Home: NextPage = () => {
       }
     };
 
-    const authenticate = async () => {
+    const domain = window.location.host;
+    const origin = window.location.origin;
+    const createSiweMessage = async (address: string, statement: string) => {
+      const res = await axios.post(
+        `https://api-v2.spheron.network/v1/auth/web3/nonce`
+    );
+
+      console.log(res);
+
+      const message = new SiweMessage({
+        domain,
+        address,
+        statement,
+        uri: origin,
+        version: '1',
+        chainId: 1,
+        nonce: await res.data
+      });
+      return message.prepareMessage();
+    };
+
+    const signInWithEthereum = async () => {
       try {
         const [accountAddress] = await web3.eth.getAccounts();
         if (!accountAddress) {
           throw new Error('No accounts have been authorized by MetaMask');
         }
+
+        let message = null;
+        let signature = null;
+
+        const signer = await web3.givenProvider;
+
+        message = await createSiweMessage(
+            await signer.address,
+            'Sign in with Ethereum to the app.'
+        );
+        console.log(message);
+        signature = await signer.signMessage(message);
+        console.log(signature);
+
         const { data } = await axios.post('/api/auth', { accountAddress });
         useStore.setState({ isAuthenticated: data.isAuthenticated });
         useStore.setState({ walletConnectionAttempted: true });
@@ -60,7 +96,7 @@ const Home: NextPage = () => {
       web3 = new Web3(Web3.givenProvider);
       window.ethereum.on('accountsChanged', handleAccountChanged);
       useStore.setState({ errorMessage: false });
-      authenticate();
+      signInWithEthereum();
     } else {
       // show error state for when metamask isn't installed
       setIsLoading(false);
