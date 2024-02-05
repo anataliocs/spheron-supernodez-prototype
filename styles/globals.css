@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  @font-face {
+    font-family: 'Lineto Akkurat';
+    src: url('/assets/fonts/LLAkkurat-LightWeb/css/fonts/lineto-akkurat-light.woff')
+      format(woff);
+    font-weight: 300;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'Lineto Akkurat';
+    src: url('/assets/fonts/LLAkkurat-RegularWeb/css/fonts/lineto-akkurat-regular.woff')
+      format(woff);
+    font-weight: 400;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'Lineto Akkurat Mono';
+    src: url('/assets/fonts/LLAkkuratMonoWeb/css/fonts/lineto-akkuratmono-regular.woff')
+      format(woff);
+    font-weight: 400;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'Lineto Akkurat';
+    src: url('/assets/fonts/LLAkkurat-LightOTStd/AkkuratStd-Light.otf')
+      format('opentype');
+    font-weight: 300;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'Lineto Akkurat';
+    src: url('/assets/fonts/LLAkkurat-RegularOTStd/css/fonts/AkkuratStd-Regular.otf')
+      format('opentype');
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    font-family: 'Lineto Akkurat';
+    @apply h-full w-full bg-[#151E2A] font-light text-white;
+  }
+}

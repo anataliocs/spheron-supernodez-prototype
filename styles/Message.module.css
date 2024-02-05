@@ -1,0 +1,23 @@
+.outerBox {
+  @apply mb-10 max-w-4xl rounded-lg bg-[#A7A7A7]/[1%] p-6 shadow-custom backdrop-blur-2xl;
+}
+
+.innerBox {
+  @apply flex flex-col justify-center rounded-lg bg-[#A7A7A7]/[2%] px-6 py-10 shadow-custom tablet:min-h-[20rem] tablet:px-16 tablet:pb-12 tablet:pt-14;
+}
+
+.accessBox {
+  @apply justify-center rounded-sm bg-[#A7A7A7]/[2%] p-2 m-2 shadow-custom;
+}
+
+.title {
+  @apply mb-8 text-4xl font-bold leading-none uppercase tablet:text-5xl;
+}
+
+.text {
+  @apply text-2xl font-light leading-none tablet:text-3xl;
+}
+
+.nftImage {
+  @apply max-w-[15%] h-auto mx-auto;
+}

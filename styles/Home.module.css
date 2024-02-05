@@ -1,0 +1,31 @@
+.container {
+  @apply relative h-full w-full bg-[#151E2A] font-light text-white;
+}
+
+.container::before {
+  content: '';
+  background-image: url('/assets/images/background-image.jpg');
+  filter: blur(30px);
+  transition: 0.5s filter ease-in-out;
+  @apply fixed inset-0 bg-fixed bg-center bg-no-repeat bg-cover;
+}
+
+.noblur::before {
+  filter: blur(0px);
+}
+
+.logo {
+  @apply absolute py-2 -translate-x-1/2 left-1/2 top-8 tablet:left-16 tablet:translate-x-0;
+}
+
+.address {
+  @apply hidden tablet:block absolute w-auto top-8 right-16 rounded-lg bg-[#A7A7A7]/[5%] shadow-custom backdrop-blur-2xl py-3 text-sm uppercase leading-none bg-gradient-border-to-b text-white px-4;
+}
+
+.main {
+  @apply relative top-24 z-10 flex flex-col items-center px-6 text-center text-white tablet:top-[43vh] short:top-[36vh] shorter:top-36;
+}
+
+.errorMessage {
+  @apply z-40 mt-4 text-primary tablet:max-w-md;
+}
