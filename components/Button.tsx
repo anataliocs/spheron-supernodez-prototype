@@ -62,7 +62,7 @@ const Button = () => {
     let signature = await signer.signMessage(siweMessage);
     console.log("signature: " + signature);
 
-    const type: string = 'signup';
+    const type: string = 'SIGNUP';
     const referralCode = '';
 
     const url = `https://api-dev.spheron.network/v1/auth/web3/callback?state=${type}&address=${addressString}
@@ -72,10 +72,22 @@ const Button = () => {
 
     console.log(url);
 
-    const responseToken = await axios.post(url);
+    const params = {
+      state: 'signup',
+      addressString,
+      message,
+      signature,
+      referralCode: '',
+    };
 
-    console.log(responseToken.status);
-    console.log(responseToken.data);
+    const res = await axios.get(url, {
+      params,
+      headers: {
+        Authorization: `Bearer ${nonceResponse}`,
+      },
+    });
+
+    window.open(url, '_blank');
 
   };
 
