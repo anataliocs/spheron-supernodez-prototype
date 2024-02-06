@@ -39,27 +39,6 @@ const Home: NextPage = () => {
       }
     };
 
-    const domain = window.location.host;
-    const origin = window.location.origin;
-    const createSiweMessage = async (address: string, statement: string) => {
-      const res = await axios.post(
-        `https://api-v2.spheron.network/v1/auth/web3/nonce`
-    );
-
-      console.log(res);
-
-      const message = new SiweMessage({
-        domain,
-        address,
-        statement,
-        uri: origin,
-        version: '1',
-        chainId: 1,
-        nonce: await res.data
-      });
-      return message.prepareMessage();
-    };
-
     const signInWithEthereum = async () => {
       try {
         const [accountAddress] = await web3.eth.getAccounts();
@@ -67,21 +46,6 @@ const Home: NextPage = () => {
           throw new Error('No accounts have been authorized by MetaMask');
         }
 
-        let message = null;
-        let signature = null;
-
-        const signer = await web3.givenProvider;
-
-        message = await createSiweMessage(
-            await signer.address,
-            'Sign in with Ethereum to the app.'
-        );
-        console.log(message);
-        signature = await signer.signMessage(message);
-        console.log(signature);
-
-        const { data } = await axios.post('/api/auth', { accountAddress });
-        useStore.setState({ isAuthenticated: data.isAuthenticated });
         useStore.setState({ walletConnectionAttempted: true });
         useStore.setState({ walletAddress: accountAddress });
       } catch (error) {
