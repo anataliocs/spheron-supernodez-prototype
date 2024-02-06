@@ -60,16 +60,30 @@ const Button = () => {
 
     console.log("message: " + siweMessage);
     let signature = await signer.signMessage(siweMessage);
-    console.log(signature);
+    console.log("signature: " + signature);
 
-    const { data } = await axios.post('/api/auth', {
-      addressString, siweMessage, signature, nonceResponse
-    });
+    const type: string = 'signup';
+    const referralCode = '';
+
+    const url = `https://api-dev.spheron.network/v1/auth/web3/callback?state=${type}&address=${addressString}
+    &message=${JSON.stringify(siweMessage)}
+    &signature=${JSON.stringify(signature)}
+    &referralCode=${referralCode}`;
+
+    console.log(url);
+
+    const responseToken = await axios.post(url);
+
+    console.log(responseToken.status);
+    console.log(responseToken.data);
+
   };
 
   const handleConnectWallet = async () => {
     const { ethereum } = window;
     setIsLoading(true);
+
+    console.log(ethereum);
 
     if (typeof ethereum !== 'undefined') {
       useStore.setState({ errorMessage: false });
@@ -77,12 +91,10 @@ const Button = () => {
         const [accountAddress] = await ethereum.request({
           method: 'eth_requestAccounts',
         });
-        const { data } = await axios.post('/api/auth', { accountAddress });
-        useStore.setState({ isAuthenticated: data.isAuthenticated });
+        useStore.setState({isAuthenticated: true});
         useStore.setState({ walletConnectionAttempted: true });
         setIsLoading(false);
       } catch {
-        useStore.setState({ isAuthenticated: false });
         useStore.setState({ walletConnectionAttempted: true });
         setIsLoading(false);
       }
@@ -95,15 +107,15 @@ const Button = () => {
     useStore.setState({ walletConnectionAttempted: false });
     useStore.setState({ isAuthenticated: false });
   };
-  const handleSuccessButtonClick = () => {
+  const handleSuccessButtonClick = async () => {
 
-    createSiweMessage();
+    await createSiweMessage();
 
     const jsConfetti = new JSConfetti();
-    jsConfetti.addConfetti({
-      emojis: ['🚀', '🔥'],
+    //jsConfetti.addConfetti({
+    //  emojis: ['🚀', '🔥'],
       // confettiNumber: 100,
-    });
+    //});
   };
 
   if (isLoading) {
@@ -118,7 +130,7 @@ const Button = () => {
     if (isAuthenticated) {
       return (
         <button onClick={handleSuccessButtonClick} className={styles.button}>
-          Let's Go
+          Sign-in with Ethereum
         </button>
       );
     }

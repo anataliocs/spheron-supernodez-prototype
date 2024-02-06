@@ -1,5 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import axios from "axios";
 require('dotenv').config();
+
+interface Request {
+    addressString: string;
+    siweMessage: string;
+    signature: string;
+    nonceResponse: string;
+}
 
 interface Response {
   isAuthenticated : boolean;
@@ -20,13 +28,13 @@ export default async function handler(
   }
 
     console.log("Parameters");
-    console.log(req);
-    console.log(req.body.accountAddress);
-    console.log(req.body.message);
+    console.log(req.query);
+    console.log(req.body.addressString);
+    console.log(req.body.siweMessage);
     console.log(req.body.signature);
 
-    const accountAddress: string = req.body.accountAddress;
-    const message: string = req.body.message;
+    const accountAddress: string = req.body.addressString;
+    const message: string = req.body.siweMessage;
     const signature: string = req.body.signature;
     const type: string = 'signup';
     const referralCode = '';
@@ -46,14 +54,9 @@ export default async function handler(
         referralCode: '',
     };
 
-//    const responseToken = await axios.get(url, {
-//        params,
-//        headers: {
-//            Authorization: `Bearer ${nonce}`,
-//        },
-//    });
+    const responseToken = await axios.get(url);
 
-    console.log(url);
+
 
     return res.status(200).json({
         isAuthenticated: true
