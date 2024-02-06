@@ -4,21 +4,36 @@ import { getSigner } from './signer';
 
 export const signin = async () => {
   const { signer, address } = await getSigner();
-  const message = await createSiweMessage(
+  const { message, preparedMessage, nonce } = await createSiweMessage(
     address,
     'Sign in with Ethereum to the app.'
   );
-  const signature = await signer.signMessage(message);
+  const signature = await signer.signMessage(preparedMessage);
   const type = 'signup';
   const referralCode = '';
 
   console.log(message);
 
-  const res = await axios.get(
-    `https://api-dev.spheron.network/v1/auth/web3/callback?state=${type}&address=${address}&message=${JSON.stringify(
-      message
-    )}&signature=${signature}&referralCode=${referralCode}`
-  );
+  const url = `https://api-dev.spheron.network/v1/auth/web3/callback?state=${type}&address=${address}&message=${JSON.stringify(
+    message
+  )}&signature=${signature}&referralCode=${referralCode}`;
+
+  console.log(url);
+
+  const params = {
+    state: 'signup',
+    address,
+    message,
+    signature,
+    referralCode: '',
+  };
+
+  const res = await axios.get(url, {
+    params,
+    headers: {
+      Authorization: `Bearer ${nonce}`,
+    },
+  });
 
   console.log(res);
 

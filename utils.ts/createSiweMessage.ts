@@ -17,5 +17,9 @@ export const createSiweMessage = async (address: string, statement: string) => {
     chainId: 1,
     nonce: res.data.nonce,
   });
-  return message.prepareMessage();
+  return {
+    message,
+    preparedMessage: message.prepareMessage(),
+    nonce: res.data.nonce,
+  };
 };
