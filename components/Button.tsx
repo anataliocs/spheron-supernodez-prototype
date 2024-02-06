@@ -4,6 +4,7 @@ import useStore from '../helpers/store';
 import LoadingSpinner from './icons/LoadingSpinner';
 import JSConfetti from 'js-confetti';
 import styles from '../styles/Button.module.css';
+import { signin } from '../utils.ts/signin';
 
 const Button = () => {
   const walletConnectionAttempted = useStore(
@@ -14,33 +15,14 @@ const Button = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleConnectWallet = async () => {
-    const { ethereum } = window;
-    setIsLoading(true);
-
-    if (typeof ethereum !== 'undefined') {
-      useStore.setState({ errorMessage: false });
-      try {
-        const [accountAddress] = await ethereum.request({
-          method: 'eth_requestAccounts',
-        });
-        const { data } = await axios.post('/api/auth', { accountAddress });
-        useStore.setState({ isAuthenticated: data.isAuthenticated });
-        useStore.setState({ walletConnectionAttempted: true });
-        setIsLoading(false);
-      } catch {
-        useStore.setState({ isAuthenticated: false });
-        useStore.setState({ walletConnectionAttempted: true });
-        setIsLoading(false);
-      }
-    } else {
-      useStore.setState({ errorMessage: true });
-    }
-    setIsLoading(false);
+    await signin();
   };
+
   const handleBackButtonClick = () => {
     useStore.setState({ walletConnectionAttempted: false });
     useStore.setState({ isAuthenticated: false });
   };
+
   const handleSuccessButtonClick = () => {
     const jsConfetti = new JSConfetti();
     jsConfetti.addConfetti({
