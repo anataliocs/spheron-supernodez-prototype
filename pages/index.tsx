@@ -21,6 +21,84 @@ const Home: NextPage = () => {
 
   // check if wallet has already been connected and set isAuthenticated accordingly
   useEffect(() => {
+    const token = localStorage.getItem('jwt-token');
+    if (token) {
+      let user: any;
+      (async () => {
+        const res = await axios.get(`http://localhost:8080/v1/profile/`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        console.log(res.data.user);
+        user = res.data.user;
+
+        // (async () => {
+        //   const orgRes = await axios.post(
+        //     `http://localhost:8080/v1/organization/`,
+        //     {
+        //       name: user.platformProfile.name,
+        //       username: user.platformProfile.username,
+        //       image: '',
+        //       preferedAppType: 'compute',
+        //     },
+        //     {
+        //       headers: {
+        //         Authorization: `Bearer ${token}`,
+        //       },
+        //     }
+        //   );
+        //   console.log(orgRes);
+        // })();
+
+        const orgId = user.organizations[0].compute._id;
+        console.log(orgId);
+        (async () => {
+          const orgRes = await axios.get(
+            `http://localhost:8080/v1/organization/${orgId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          console.log(orgRes.data);
+        })();
+
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        // (async () => {
+        //   const accessRes = await axios.post(
+        //     `http://localhost:8080/v1/api-keys/`,
+        //     {
+        //       name: 'tg-bot',
+        //       organizationId: orgId,
+        //       expiresAt: tomorrow,
+        //     },
+        //     {
+        //       headers: {
+        //         Authorization: `Bearer ${token}`,
+        //       },
+        //     }
+        //   );
+        //   console.log(accessRes.data.value);
+        // })();
+
+        (async () => {
+          const accessRes = await axios.get(
+            `http://localhost:8080/v1/api-keys`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          console.log(accessRes.data.apiKeys);
+        })();
+      })();
+    }
+
     // let web3: any;
     // const { ethereum } = window;
     // const handleAccountChanged = (accounts: string[] | null | undefined) => {
