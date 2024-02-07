@@ -1,12 +1,11 @@
 import { useState } from 'react';
-import axios from 'axios';
 import useStore from '../helpers/store';
 import LoadingSpinner from './icons/LoadingSpinner';
 import JSConfetti from 'js-confetti';
 import styles from '../styles/Button.module.css';
-import { signin } from '../utils.ts/signin';
+import { authenticate } from '../utils.ts/authenticate';
 
-const Button = () => {
+const SigninButton = () => {
   const walletConnectionAttempted = useStore(
     (state) => state.walletConnectionAttempted
   );
@@ -15,7 +14,7 @@ const Button = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleConnectWallet = async () => {
-    await signin();
+    await authenticate('LOGIN');
   };
 
   const handleBackButtonClick = () => {
@@ -55,9 +54,9 @@ const Button = () => {
   }
   return (
     <button onClick={handleConnectWallet} className={styles.buttonPrimary}>
-      Connect Wallet
+      Signin
     </button>
   );
 };
 
-export default Button;
+export default SigninButton;

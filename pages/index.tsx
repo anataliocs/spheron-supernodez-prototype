@@ -1,14 +1,15 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
+import axios from 'axios';
 import styles from '../styles/Home.module.css';
 import useStore from '../helpers/store';
-import Button from '../components/Button';
 import SpheronLogo from '../components/icons/SpheronLogo';
 import Message from '../components/Message';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import LoadingSpinner from '../components/icons/LoadingSpinner';
-import { SiweMessage } from 'siwe';
+import SigninButton from '../components/SigninButton';
+import SignupButton from '../components/SignupButton';
+import { getSigner } from '../utils.ts/signer';
 
 const Home: NextPage = () => {
   const walletConnectionAttempted = useStore(
@@ -19,11 +20,12 @@ const Home: NextPage = () => {
   const errorMessage = useStore((state) => state.errorMessage);
   const [isLoading, setIsLoading] = useState(false);
 
+  console.log(walletAddress);
+
   // check if wallet has already been connected and set isAuthenticated accordingly
   useEffect(() => {
     const token = localStorage.getItem('jwt-token');
     if (token) {
-      let user: any;
       (async () => {
         const res = await axios.get(`http://localhost:8080/v1/profile/`, {
           headers: {
@@ -31,155 +33,77 @@ const Home: NextPage = () => {
           },
         });
         console.log(res.data.user);
-        user = res.data.user;
 
-        // (async () => {
-        //   const orgRes = await axios.post(
-        //     `http://localhost:8080/v1/organization/`,
-        //     {
-        //       name: user.platformProfile.name,
-        //       username: user.platformProfile.username,
-        //       image: '',
-        //       preferedAppType: 'compute',
-        //     },
-        //     {
-        //       headers: {
-        //         Authorization: `Bearer ${token}`,
-        //       },
-        //     }
-        //   );
-        //   console.log(orgRes);
-        // })();
+        useStore.setState({
+          walletAddress: res.data.user.providerProfiles[0].id,
+        });
 
-        const orgId = user.organizations[0].compute._id;
-        console.log(orgId);
-        (async () => {
-          const orgRes = await axios.get(
-            `http://localhost:8080/v1/organization/${orgId}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
+        if (res.data.user.organizations) {
+          const organizationExists = res.data.user.organizations.find(
+            (org: any) =>
+              org.profile.name === res.data.user.providerProfiles[0].id
           );
-          console.log(orgRes.data);
-        })();
-
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-
-        // (async () => {
-        //   const accessRes = await axios.post(
-        //     `http://localhost:8080/v1/api-keys/`,
-        //     {
-        //       name: 'tg-bot',
-        //       organizationId: orgId,
-        //       expiresAt: tomorrow,
-        //     },
-        //     {
-        //       headers: {
-        //         Authorization: `Bearer ${token}`,
-        //       },
-        //     }
-        //   );
-        //   console.log(accessRes.data.value);
-        // })();
-
-        (async () => {
-          const accessRes = await axios.get(
-            `http://localhost:8080/v1/api-keys`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
+          if (!organizationExists) {
+            (async () => {
+              const orgRes = await axios.post(
+                `http://localhost:8080/v1/organization/`,
+                {
+                  name: res.data.user.providerProfiles[0].id,
+                  username: res.data.user.providerProfiles[0].id,
+                  image: '',
+                  preferedAppType: 'compute',
+                },
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                }
+              );
+              console.log(orgRes);
+            })();
+          }
+        } else {
+          (async () => {
+            const orgRes = await axios.post(
+              `http://localhost:8080/v1/organization/`,
+              {
+                name: res.data.user.providerProfiles[0].id,
+                username: res.data.user.providerProfiles[0].id,
+                image: '',
+                preferedAppType: 'compute',
               },
-            }
-          );
-          console.log(accessRes.data.apiKeys);
-        })();
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            );
+            console.log(orgRes);
+          })();
+        }
       })();
     }
-
-    // let web3: any;
-    // const { ethereum } = window;
-    // const handleAccountChanged = (accounts: string[] | null | undefined) => {
-    //   if (Array.isArray(accounts)) {
-    //     const [account] = accounts;
-    //     if (account) {
-    //       setIsLoading(true);
-    //       signInWithEthereum();
-    //     } else {
-    //       window.location.reload();
-    //     }
-    //   } else {
-    //     window.location.reload();
-    //   }
-    // };
-    // const domain = window.location.host;
-    // const origin = window.location.origin;
-    // const createSiweMessage = async (address: string, statement: string) => {
-    //   const res = await axios.post(
-    //     `https://api-dev.spheron.network/v1/auth/web3/nonce`
-    //   );
-    //   console.log(res);
-    //   const message = new SiweMessage({
-    //     domain,
-    //     address,
-    //     statement,
-    //     uri: origin,
-    //     version: '1',
-    //     chainId: 1,
-    //     nonce: await res.data,
-    //   });
-    //   return message.prepareMessage();
-    // };
-    // const signInWithEthereum = async () => {
-    //   try {
-    //     const [accountAddress] = await web3.eth.getAccounts();
-    //     if (!accountAddress) {
-    //       throw new Error('No accounts have been authorized by MetaMask');
-    //     }
-    //     let message = null;
-    //     let signature = null;
-    //     const signer = await web3.givenProvider;
-    //     message = await createSiweMessage(
-    //       await signer.address,
-    //       'Sign in with Ethereum to the app.'
-    //     );
-    //     console.log(message);
-    //     signature = await signer.signMessage(message);
-    //     console.log(signature);
-    //     const { data } = await axios.post('/api/auth', { accountAddress });
-    //     useStore.setState({ isAuthenticated: data.isAuthenticated });
-    //     useStore.setState({ walletConnectionAttempted: true });
-    //     useStore.setState({ walletAddress: accountAddress });
-    //   } catch (error) {
-    //     useStore.setState({ isAuthenticated: false });
-    //     useStore.setState({ walletConnectionAttempted: false });
-    //   }
-    //   setIsLoading(false);
-    // };
-    // if (typeof ethereum !== 'undefined') {
-    //   // web3 = new Web3(Web3.givenProvider);
-    //   window.ethereum.on('accountsChanged', handleAccountChanged);
-    //   useStore.setState({ errorMessage: false });
-    //   signInWithEthereum();
-    // } else {
-    //   // show error state for when metamask isn't installed
-    //   setIsLoading(false);
-    //   useStore.setState({ errorMessage: true });
-    // }
-    // return () => {
-    //   if (typeof ethereum !== 'undefined') {
-    //     window.ethereum.removeListener('accountsChanged', handleAccountChanged);
-    //   }
-    // };
   }, []);
 
   const mainContent = () => {
     return (
       <>
         <Message />
-        <Button />
+        {walletAddress ? (
+          <div className="text-lg">
+            Wallet Connected:{' '}
+            {`${walletAddress.substring(0, 5)}...${walletAddress.substring(
+              walletAddress.length - 5,
+              walletAddress.length
+            )}`}
+          </div>
+        ) : (
+          <>
+            <SigninButton />
+            <SignupButton />
+          </>
+        )}
+
         {errorMessage && (
           <p className={styles.errorMessage}>
             We couldn't detect your wallet. Please click{' '}

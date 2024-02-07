@@ -3,7 +3,7 @@
 }
 
 .buttonPrimary {
-  @apply w-full rounded-lg bg-[#EBEBEB]/10 bg-gradient-border-to-b px-0 py-9 text-2xl uppercase leading-none text-primary shadow-custom backdrop-blur-2xl outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-[#473F42] tablet:max-w-md tablet:px-[7.5rem];
+  @apply w-full rounded-lg bg-[#EBEBEB]/10 bg-gradient-border-to-b px-0 py-6 text-2xl uppercase leading-none text-primary shadow-custom backdrop-blur-2xl outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-[#473F42] tablet:max-w-md tablet:px-[7.5rem] my-4;
 }
 
 .buttonLoading {

@@ -11,7 +11,7 @@
 }
 
 .title {
-  @apply mb-8 text-4xl font-bold leading-none uppercase tablet:text-5xl;
+  @apply mb-8 text-4xl font-bold leading-none tablet:text-5xl;
 }
 
 .text {
