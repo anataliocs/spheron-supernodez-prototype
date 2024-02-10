@@ -10,6 +10,7 @@ import LoadingSpinner from '../components/icons/LoadingSpinner';
 import SigninButton from '../components/SigninButton';
 import SignupButton from '../components/SignupButton';
 import { getSigner } from '../utils.ts/signer';
+import Deploy from '../components/Deploy';
 
 const Home: NextPage = () => {
   const walletConnectionAttempted = useStore(
@@ -90,13 +91,16 @@ const Home: NextPage = () => {
       <>
         <Message />
         {walletAddress ? (
-          <div className="text-lg">
-            Wallet Connected:{' '}
-            {`${walletAddress.substring(0, 5)}...${walletAddress.substring(
-              walletAddress.length - 5,
-              walletAddress.length
-            )}`}
-          </div>
+          <>
+            <div className="text-lg">
+              Wallet Connected:{' '}
+              {`${walletAddress.substring(0, 5)}...${walletAddress.substring(
+                walletAddress.length - 5,
+                walletAddress.length
+              )}`}
+            </div>
+            <Deploy />
+          </>
         ) : (
           <>
             <SigninButton />
